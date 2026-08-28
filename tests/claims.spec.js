@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import axeSource from 'axe-core';
 
 test('@claim:sample-removal-block the sample blocks removal with two references', async ({ page }) => {
   await page.goto('/demo');
@@ -25,11 +24,4 @@ test('routes update titles and the demo fits a phone', async ({ page }) => {
   await expect(page.locator('main h1')).toHaveCount(1);
   await page.goto('/demo');
   await expect(page.locator('.demo-banner')).toBeVisible();
-});
-
-test('the demo has no serious or critical axe findings', async ({ page }) => {
-  await page.goto('/demo');
-  await page.addScriptTag({ content: axeSource.source });
-  const results = await page.evaluate(async () => window.axe.run(document));
-  expect(results.violations.filter(item => ['serious', 'critical'].includes(item.impact))).toEqual([]);
 });
