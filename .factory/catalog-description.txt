@@ -1,1 +1,1 @@
-Find expired release flags and source references before removal.
+Find expired release flags and block removal until source references are gone.

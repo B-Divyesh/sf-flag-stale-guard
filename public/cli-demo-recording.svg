@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="780" viewBox="0 0 920 780" role="img" aria-labelledby="title description">
+  <title id="title">Recorded terminal session for flag-stale-guard demo</title>
+  <desc id="description">A self-hosted terminal recording of the Flag Stale Guard demo command. It creates a temporary workspace, lists checkout-v2, legacy-cart, and billing-surge-cap, then shows the two remaining source references and checklist for legacy-cart.</desc>
+  <rect width="920" height="780" fill="#17231f"/>
+  <rect x="16" y="16" width="888" height="748" fill="none" stroke="#a8b58f" stroke-width="2"/>
+  <circle cx="46" cy="46" r="7" fill="#8b3038"/>
+  <circle cx="70" cy="46" r="7" fill="#b36f22"/>
+  <circle cx="94" cy="46" r="7" fill="#b7db81"/>
+  <text x="126" y="52" fill="#dce1c4" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16">recorded terminal session · bundled sample</text>
+  <line x1="32" y1="70" x2="888" y2="70" stroke="#52665b" stroke-width="1"/>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" xml:space="preserve">
+    <text x="44" y="104" fill="#b7db81">$</text>
+    <text x="66" y="104" fill="#eff2df">flag-stale-guard demo</text>
+    <text x="44" y="152" fill="#eff2df">Demo workspace: [temporary workspace]</text>
+    <text x="44" y="176" fill="#eff2df">Sample data only; nothing in your repository changed.</text>
+    <text x="44" y="200" fill="#dce1c4">Flag inventory</text>
+
+    <text x="44" y="248" fill="#eff2df">checkout-v2 — tracked</text>
+    <text x="44" y="272" fill="#eff2df">  owner: Mina | expiry: 2026-12-01 | adapter: literal</text>
+    <text x="44" y="296" fill="#eff2df">  source references: 1</text>
+    <text x="44" y="320" fill="#eff2df">    src/checkout.ts:2</text>
+
+    <text x="44" y="368" fill="#f6a8a7">legacy-cart — expired</text>
+    <text x="44" y="392" fill="#eff2df">  owner: Drew | expiry: 2026-02-15 | adapter: literal</text>
+    <text x="44" y="416" fill="#eff2df">  source references: 2</text>
+    <text x="44" y="440" fill="#eff2df">    src/checkout.ts:6</text>
+    <text x="44" y="464" fill="#eff2df">    src/legacy.ts:1</text>
+    <text x="44" y="488" fill="#dce1c4">  removal checklist:</text>
+    <text x="44" y="512" fill="#eff2df">    - Confirm the flag's rollout is complete.</text>
+    <text x="44" y="536" fill="#eff2df">    - Remove every source reference listed below.</text>
+    <text x="44" y="560" fill="#eff2df">    - Delete the flag from its provider after code cleanup.</text>
+    <text x="44" y="584" fill="#eff2df">    - Run the test suite before release.</text>
+
+    <text x="44" y="632" fill="#eff2df">billing-surge-cap — tracked</text>
+    <text x="44" y="656" fill="#eff2df">  owner: Inez | expiry: 2026-10-01 | adapter: literal</text>
+    <text x="44" y="680" fill="#eff2df">  source references: 0</text>
+  </g>
+  <text x="44" y="732" fill="#a8b58f" font-family="Georgia, serif" font-size="15">Flag Stale Guard · local sample run</text>
+</svg>

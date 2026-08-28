@@ -63,7 +63,7 @@ The included composite action runs the same `--check` gate. It uses the Rust too
 cargo run -- demo
 ```
 
-The command creates a temporary sample workspace and prints where it is. Nothing in your repository changes. The website demo is at `/?demo=1` and uses the same sample data. It keeps its review state in memory and Reset demo restores the original three flags.
+The command creates a temporary sample workspace and prints where it is. Nothing in your repository changes. The landing page has a self-hosted terminal recording and transcript of this command. The website demo is at `/?demo=1` and uses the same sample data. It keeps its review state in memory and Reset demo restores the original three flags.
 
 ## Develop, test, and build
 

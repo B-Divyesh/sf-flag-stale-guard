@@ -63,6 +63,13 @@
     "sandbox": "fresh browser context at /?demo=1; mark the sample source reference reviewed; reset; assert the original state and announced reset"
   },
   {
+    "id": "cli-demo-recording",
+    "claim": "The landing page includes a self-hosted recording and transcript of flag-stale-guard demo using the bundled sample.",
+    "where": "Landing page, README, and demo documentation",
+    "test": "npm test -- --grep @claim:cli-demo-recording",
+    "sandbox": "fresh browser context plus packaged CLI demo; normalize the per-run temporary workspace, compare it with the HTML transcript, and assert the local SVG shows the command, three flags, checklist, and two legacy-cart references"
+  },
+  {
     "id": "local-source",
     "claim": "The CLI sends no source code away.",
     "where": "Landing facts, privacy page, and README",

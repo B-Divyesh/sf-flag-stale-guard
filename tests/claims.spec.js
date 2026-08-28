@@ -29,6 +29,12 @@ function fixture(name, config, sources = {}) {
   return directory;
 }
 
+function normalizeDemoOutput(output) {
+  return output
+    .replace(/^Demo workspace: .+$/m, 'Demo workspace: [temporary workspace]')
+    .trim();
+}
+
 test.beforeAll(() => {
   sandbox = mkdtempSync(join(tmpdir(), 'flag-stale-guard-claims-'));
   execFileSync('cargo', ['package', '--allow-dirty'], { cwd: repository, stdio: 'pipe' });
@@ -228,7 +234,7 @@ test('@claim:website-private the website uses no analytics, cookies, accounts, p
   }
   expect(foreign).toEqual([]);
   expect(requests.filter(path =>
-    !['/', '/demo', '/privacy', '/field-guide-hero.webp', '/favicon.svg'].includes(path)
+    !['/', '/demo', '/privacy', '/field-guide-hero.webp', '/cli-demo-recording.svg', '/favicon.svg'].includes(path)
     && !path.startsWith('/assets/')
   )).toEqual([]);
   expect(await context.cookies()).toEqual([]);
@@ -287,10 +293,53 @@ test('@claim:mit-license the shipped CLI and website are MIT licensed', async ({
   await expect(page.getByText('MIT licensed.')).toBeVisible();
 });
 
-test('@claim:checkout-install the packaged checkout installs a working CLI without a registry release', async ({ page }) => {
-  const result = run(['--version']);
+test('@claim:cli-demo-recording the landing recording and transcript match the packaged CLI demo', async ({ page }) => {
+  const result = run(['demo']);
+  expect(result.status).toBe(0);
+  const expectedTranscript = `$ flag-stale-guard demo\n${normalizeDemoOutput(result.stdout)}`;
+
+  await page.goto('/');
+  const recording = page.locator('#cli-demo-recording');
+  await expect(recording).toBeVisible();
+  await expect(recording).toHaveAttribute('src', '/cli-demo-recording.svg');
+  await expect(recording).toHaveAttribute('alt', /temporary workspace/);
+  await expect(page.getByRole('link', { name: 'Download terminal recording' })).toHaveAttribute('download', '');
+  await page.locator('#cli-demo-transcript-control').click();
+  expect(await page.locator('#cli-demo-transcript').textContent()).toBe(expectedTranscript);
+
+  const svg = readFileSync(resolve('public/cli-demo-recording.svg'), 'utf8');
+  for (const text of [
+    'flag-stale-guard demo',
+    'checkout-v2 — tracked',
+    'legacy-cart — expired',
+    'src/checkout.ts:6',
+    'src/legacy.ts:1',
+    'removal checklist:',
+    'billing-surge-cap — tracked'
+  ]) expect(svg).toContain(text);
+});
+
+test('@claim:checkout-install a clean repository checkout installs and runs the CLI without a registry release', async ({ page }) => {
+  const checkout = join(sandbox, 'checkout');
+  const installRoot = join(sandbox, 'checkout-install');
+  const targetDirectory = join(sandbox, 'checkout-target');
+  execFileSync('git', ['clone', '--local', '--no-hardlinks', repository, checkout], { stdio: 'pipe' });
+  execFileSync('cargo', ['install', '--path', '.', '--root', installRoot, '--force'], {
+    cwd: checkout,
+    env: { ...process.env, CARGO_TARGET_DIR: targetDirectory },
+    stdio: 'pipe'
+  });
+  const checkoutBinary = join(installRoot, 'bin', 'flag-stale-guard');
+  const result = spawnSync(checkoutBinary, ['--version'], { cwd: checkout, encoding: 'utf8' });
   expect(result.status).toBe(0);
   expect(result.stdout.trim()).toBe('flag-stale-guard 0.1.0');
+
+  const demo = spawnSync(checkoutBinary, ['demo'], { cwd: checkout, encoding: 'utf8' });
+  expect(demo.status).toBe(0);
+  expect(demo.stdout).toContain('Demo workspace:');
+  expect(demo.stdout).toContain('legacy-cart — expired');
+  expect(execFileSync('git', ['status', '--porcelain=v1'], { cwd: checkout, encoding: 'utf8' })).toBe('');
+
   await page.goto('/');
   const install = page.locator('.install');
   await expect(install).toContainText('cargo install --path sf-flag-stale-guard');

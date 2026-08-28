@@ -1,6 +1,6 @@
 # Copy audit
 
-Catalog description: **Find expired release flags and source references before removal.** (9 words)
+Catalog description: **Find expired release flags and block removal until source references are gone.** (11 words)
 
 All landing sentences are below 22 words. No banned marketing words appear.
 
@@ -14,9 +14,12 @@ All landing sentences are below 22 words. No banned marketing words appear.
 | Runs from a repository checkout. | 5 |
 | Sends no source code away. | 5 |
 | MIT licensed. | 2 |
-| Sample scan | 2 |
-| See the removal gate before install | 6 |
-| Exit 2: expired flags need attention. | 6 |
+| Terminal recording | 2 |
+| See the actual CLI demo | 5 |
+| Download terminal recording | 3 |
+| Recorded from the shipped `flag-stale-guard demo` command. | 6 |
+| Each run uses its own temporary workspace. | 7 |
+| Read the full terminal transcript | 5 |
 | How it works | 3 |
 | Find expired flags and remaining references | 6 |
 | List each flag. | 3 |
@@ -56,6 +59,12 @@ All landing sentences are below 22 words. No banned marketing words appear.
 | One flag expired. Its removal stays blocked until both source references disappear. | 11 |
 | This only marks the sample for review. It does not change the removal result. | 14 |
 | Demo reset to the original three flags. | 7 |
+
+## README addition
+
+| Text | Words |
+|---|---:|
+| The landing page has a self-hosted terminal recording and transcript of this command. | 13 |
 
 ## Terminology
 

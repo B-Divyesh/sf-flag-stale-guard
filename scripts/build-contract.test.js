@@ -83,6 +83,23 @@ test('the one-click demo uses the isolated query entry and has an install destin
   assert.match(javascript, /href="\/#install"/);
 });
 
+test('built landing ships the self-hosted CLI demo recording and transcript controls', async () => {
+  const recording = await readFile(resolve(siteRoot, 'cli-demo-recording.svg'), 'utf8');
+  assert.match(recording, /flag-stale-guard demo/);
+  assert.match(recording, /legacy-cart — expired/);
+  assert.match(recording, /src\/checkout\.ts:6/);
+  assert.match(recording, /src\/legacy\.ts:1/);
+
+  const javascript = (await Promise.all(
+    (await readdir(resolve(siteRoot, 'assets')))
+      .filter(file => file.endsWith('.js'))
+      .map(file => readFile(resolve(siteRoot, 'assets', file), 'utf8'))
+  )).join('\n');
+  assert.match(javascript, /cli-demo-recording\.svg/);
+  assert.match(javascript, /Read the full terminal transcript/);
+  assert.match(javascript, /Download terminal recording/);
+});
+
 test('every declared claim has exactly one tagged regression test', async () => {
   const claims = JSON.parse(await readFile(resolve('.factory/claims.json'), 'utf8'));
   const tests = await readFile(resolve('tests/claims.spec.js'), 'utf8');

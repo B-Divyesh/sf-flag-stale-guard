@@ -205,6 +205,9 @@ fn inspect(config_path: &Path) -> Result<Vec<Finding>, String> {
             for p in &paths {
                 collect_refs(&root.join(p), &flag.key, &config.exclude, root, &mut refs)?;
             }
+            // Directory iteration order is not stable across filesystems. A stable inventory
+            // makes the terminal demo, JSON output, and removal checklist reproducible.
+            refs.sort();
             let owner = flag.owner.as_deref().map(str::trim).unwrap_or("");
             let expiry = flag.expires.as_deref().map(str::trim).unwrap_or("");
             let status = if owner.is_empty() || expiry.is_empty() {
