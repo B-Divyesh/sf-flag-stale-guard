@@ -16,6 +16,7 @@ The failure was reproduced with the work order command, `npm ci && npm run build
 - Added route identity, console, landmark, axe, keyboard, mobile reflow, 44 px target, and loaded-offline/update-cache browser checks.
 - Preserved initial keyboard access to the skip link and moved focus to the page heading only after client-side route changes.
 - Raised the mobile wordmark and demo controls to the 44 px target baseline.
+- Made horizontally scrollable command regions keyboard-focusable and run axe checks at the 390 px mobile viewport.
 - Updated Vite from 6.1.0 to the patched 6.4.3 release; `npm audit` now reports zero vulnerabilities.
 - Updated README build output documentation and formatted the Rust source with `cargo fmt`.
 
@@ -27,7 +28,7 @@ The original clean build command passed from an empty output directory:
 npm ci && npm run build:site
 ```
 
-It emitted `dist/site/index.html`, `dist/site/404.html`, `dist/site/staticwebapp.config.json`, and hashed assets. The initial bundles are 7,754 bytes JS (3.15 KB gzip) and 5,844 bytes CSS (2.15 KB gzip). The hero image is 61,400 bytes.
+It emitted `dist/site/index.html`, `dist/site/404.html`, `dist/site/staticwebapp.config.json`, and hashed assets. The initial bundles are 7,814 bytes JS (3.16 KB gzip) and 5,844 bytes CSS (2.15 KB gzip). The hero image is 61,400 bytes.
 
 The complete local gate passed:
 
@@ -66,7 +67,21 @@ Local production-preview verification:
 
 ## Deployment and live identity
 
-Pending the repair commit and production deployment. This section will be updated with the deployed URL and post-deploy evidence.
+The production artifact was deployed with the work order configuration:
+
+```sh
+/opt/fleet/lib/deploy-static.sh flag-stale-guard dist/site
+```
+
+- URL: `https://flag-stale-guard.sociobot.in`
+- Azure Static Web App: `sf-flag-stale-guard` in `centralus`
+- Deployed repair commit: `9d4f0e5e74fde5b62e747028398cedd2bd9b1461`
+- Deployment ID: `8b2639e9-7ffe-46e0-a124-d4e8918d47cb`
+- The live root, `/demo`, `/privacy`, and `/terms` each returned HTTP 200 with the correct title, English language, one H1, and a main landmark.
+- Live desktop and 390 px checks found zero console errors, cross-origin requests, mobile overflow, or serious/critical axe findings.
+- Security headers include the configured CSP, `X-Content-Type-Options: nosniff`, and `Referrer-Policy: strict-origin-when-cross-origin`.
+- Live Lighthouse 13.4.1 mobile: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1,207 ms; CLS 0; 68,213 transferred bytes.
+- Evidence: `/work/.evidence/repair/live-home/` and `/work/.evidence/repair/live-demo/`.
 
 ## Known limits
 
