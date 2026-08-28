@@ -1,0 +1,91 @@
+{
+  "routes": {
+    "/": {
+      "title": "Flag Stale Guard — find flags ready for removal",
+      "violations": [],
+      "layout": {
+        "viewport": 390,
+        "width": 390
+      }
+    },
+    "/demo": {
+      "title": "Demo — Flag Stale Guard",
+      "violations": [],
+      "layout": {
+        "viewport": 390,
+        "width": 390
+      }
+    },
+    "/privacy": {
+      "title": "Privacy — Flag Stale Guard",
+      "violations": [],
+      "layout": {
+        "viewport": 390,
+        "width": 390
+      }
+    },
+    "/terms": {
+      "title": "Terms — Flag Stale Guard",
+      "violations": [],
+      "layout": {
+        "viewport": 390,
+        "width": 390
+      }
+    },
+    "/missing-page": {
+      "title": "Not found — Flag Stale Guard",
+      "violations": [],
+      "layout": {
+        "viewport": 390,
+        "width": 390
+      }
+    }
+  },
+  "findings": {
+    "metadataAndCaption": "pass",
+    "history": {
+      "restored": 1665
+    },
+    "demo": {
+      "storage": {
+        "local": 0,
+        "session": 0
+      }
+    },
+    "notFound": "pass",
+    "privacy": "pass"
+  },
+  "requests": [
+    "https://flag-stale-guard.sociobot.in/",
+    "https://flag-stale-guard.sociobot.in/assets/site-DPBl4tHc.js",
+    "https://flag-stale-guard.sociobot.in/assets/style-DUm1hhc8.css",
+    "https://flag-stale-guard.sociobot.in/field-guide-hero.webp",
+    "https://flag-stale-guard.sociobot.in/?demo=1",
+    "https://flag-stale-guard.sociobot.in/assets/site-DPBl4tHc.js",
+    "https://flag-stale-guard.sociobot.in/assets/style-DUm1hhc8.css",
+    "https://flag-stale-guard.sociobot.in/missing-page",
+    "https://flag-stale-guard.sociobot.in/assets/site-DPBl4tHc.js",
+    "https://flag-stale-guard.sociobot.in/assets/style-DUm1hhc8.css",
+    "https://flag-stale-guard.sociobot.in/",
+    "https://flag-stale-guard.sociobot.in/assets/site-DPBl4tHc.js",
+    "https://flag-stale-guard.sociobot.in/assets/style-DUm1hhc8.css",
+    "https://flag-stale-guard.sociobot.in/field-guide-hero.webp",
+    "https://flag-stale-guard.sociobot.in/demo",
+    "https://flag-stale-guard.sociobot.in/assets/site-DPBl4tHc.js",
+    "https://flag-stale-guard.sociobot.in/assets/style-DUm1hhc8.css",
+    "https://flag-stale-guard.sociobot.in/privacy",
+    "https://flag-stale-guard.sociobot.in/assets/site-DPBl4tHc.js",
+    "https://flag-stale-guard.sociobot.in/assets/style-DUm1hhc8.css",
+    "https://flag-stale-guard.sociobot.in/terms",
+    "https://flag-stale-guard.sociobot.in/assets/site-DPBl4tHc.js",
+    "https://flag-stale-guard.sociobot.in/assets/style-DUm1hhc8.css",
+    "https://flag-stale-guard.sociobot.in/missing-page",
+    "https://flag-stale-guard.sociobot.in/assets/site-DPBl4tHc.js",
+    "https://flag-stale-guard.sociobot.in/assets/style-DUm1hhc8.css"
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 ()",
+    "Failed to load resource: the server responded with a status of 404 ()"
+  ],
+  "expected404ConsoleDiagnostics": 2
+}
