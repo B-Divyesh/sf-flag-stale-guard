@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 description = "A local removal gate for stale release flags"
 license = "MIT"
+repository = "https://github.com/B-Divyesh/sf-flag-stale-guard"
+readme = "README.md"
 
 [[bin]]
 name = "flag-stale-guard"

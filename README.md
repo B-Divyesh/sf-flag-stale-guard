@@ -40,6 +40,18 @@ flag-stale-guard remove-check legacy-cart --config flag-stale-guard.toml
 
 It exits `3` while source references remain. A zero exit means no configured literal references were found; still run your tests and review runtime behavior.
 
+## Use in GitHub Actions
+
+The included composite action runs the same `--check` gate. It uses the Rust toolchain supplied by your workflow.
+
+```yaml
+- uses: actions/checkout@v4
+- uses: dtolnay/rust-toolchain@stable
+- uses: B-Divyesh/sf-flag-stale-guard@main
+  with:
+    config: flag-stale-guard.toml
+```
+
 ## Try the bundled demo
 
 ```sh

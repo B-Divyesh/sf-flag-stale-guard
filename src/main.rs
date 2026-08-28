@@ -67,6 +67,8 @@ fn inspect(config_path: &Path) -> Result<Vec<Finding>, String> {
     let paths = if config.paths.is_empty() { vec![".".to_string()] } else { config.paths };
     let today = chrono::Utc::now().date_naive().to_string();
     config.flags.into_iter().map(|flag| {
+        let adapter = flag.adapter.clone().unwrap_or_else(|| "literal".into());
+        if adapter != "literal" { return Err(format!("flag `{}` uses unsupported adapter `{adapter}`; use `literal`", flag.key)); }
         let mut refs = Vec::new();
         for p in &paths { collect_refs(&root.join(p), &flag.key, &config.exclude, root, &mut refs)?; }
         let status = if flag.owner.as_deref().unwrap_or("").is_empty() || flag.expires.as_deref().unwrap_or("").is_empty() { "metadata missing" }
@@ -74,7 +76,7 @@ fn inspect(config_path: &Path) -> Result<Vec<Finding>, String> {
         else if flag.expires.as_deref().unwrap() < today.as_str() { "expired" } else { "tracked" };
         let mut checklist = Vec::new();
         if status == "expired" { checklist.extend(["Confirm the flag's rollout is complete.", "Remove every live reference listed below.", "Delete the flag from its provider after code cleanup.", "Run the test suite before release."].map(String::from)); }
-        Ok(Finding { key: flag.key, status: status.into(), owner: flag.owner, expires: flag.expires, adapter: flag.adapter.unwrap_or_else(|| "literal".into()), references: refs, checklist })
+        Ok(Finding { key: flag.key, status: status.into(), owner: flag.owner, expires: flag.expires, adapter, references: refs, checklist })
     }).collect()
 }
 fn collect_refs(path: &Path, key: &str, excludes: &[String], root: &Path, out: &mut Vec<String>) -> Result<(), String> {
