@@ -72,6 +72,17 @@ test('install copy uses the working checkout path instead of an unavailable regi
   assert.doesNotMatch(javascript, /cargo install flag-stale-guard(?:\\n|<)/);
 });
 
+test('the one-click demo uses the isolated query entry and has an install destination', async () => {
+  const javascript = (await Promise.all(
+    (await readdir(resolve(siteRoot, 'assets')))
+      .filter(file => file.endsWith('.js'))
+      .map(file => readFile(resolve(siteRoot, 'assets', file), 'utf8'))
+  )).join('\n');
+  assert.match(javascript, /\?demo=1/);
+  assert.match(javascript, /Demo reset to the original three flags/);
+  assert.match(javascript, /href="\/#install"/);
+});
+
 test('every declared claim has exactly one tagged regression test', async () => {
   const claims = JSON.parse(await readFile(resolve('.factory/claims.json'), 'utf8'));
   const tests = await readFile(resolve('tests/claims.spec.js'), 'utf8');

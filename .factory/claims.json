@@ -56,6 +56,13 @@
     "sandbox": "packaged CLI with git status before and after plus fresh browser context; assert unchanged tree and empty storage"
   },
   {
+    "id": "demo-reset",
+    "claim": "The direct website demo shows three sample flags, and Reset demo restores its original state.",
+    "where": "Demo page, demo documentation, and README",
+    "test": "npm test -- --grep @claim:demo-reset",
+    "sandbox": "fresh browser context at /?demo=1; mark the sample source reference reviewed; reset; assert the original state and announced reset"
+  },
+  {
     "id": "local-source",
     "claim": "The CLI sends no source code away.",
     "where": "Landing facts, privacy page, and README",

@@ -172,8 +172,24 @@ test('@claim:demo-sandbox CLI and website demos leave the current repository and
   expect((result.stdout.match(/ — (?:tracked|expired|metadata missing|metadata invalid)$/gm) ?? [])).toHaveLength(3);
   expect(after).toBe(before);
 
-  await page.goto('/demo');
-  await page.getByRole('button', { name: 'Reset demo' }).click();
+  await page.goto('/?demo=1');
+  await page.locator('#reset').evaluate(button => button.click());
+  expect(await page.evaluate(() => ({ local: localStorage.length, session: sessionStorage.length })))
+    .toEqual({ local: 0, session: 0 });
+});
+
+test('@claim:demo-reset the direct demo restores the original sample after a review interaction', async ({ page }) => {
+  await page.goto('/?demo=1');
+  await expect(page.getByRole('heading', { name: 'Inspect three configured flags' })).toBeVisible();
+  await expect(page.locator('#flag-list article')).toHaveCount(3);
+  const review = page.getByRole('button', { name: 'Mark first source reference reviewed' });
+  await review.click();
+  await expect(page.getByText('Reviewed in this demo', { exact: true })).toBeVisible();
+  await expect(page.getByText('First source reference marked reviewed in this demo.')).toBeVisible();
+  await page.locator('#reset').evaluate(button => button.click());
+  await expect(page.getByText('Demo reset to the original three flags.')).toBeVisible();
+  await expect(page.getByText('Reviewed in this demo', { exact: true })).toHaveCount(0);
+  await expect(page.locator('#flag-list article')).toHaveCount(3);
   expect(await page.evaluate(() => ({ local: localStorage.length, session: sessionStorage.length })))
     .toEqual({ local: 0, session: 0 });
 });

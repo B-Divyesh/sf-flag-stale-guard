@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import axeSource from 'axe-core';
 
 const routes = [
-  ['/', 'Flag Stale Guard — inspect stale release flags', 'https://flag-stale-guard.sociobot.in/'],
+  ['/', 'Flag Stale Guard — find flags ready for removal', 'https://flag-stale-guard.sociobot.in/'],
   ['/demo', 'Demo — Flag Stale Guard', 'https://flag-stale-guard.sociobot.in/demo'],
   ['/privacy', 'Privacy — Flag Stale Guard', 'https://flag-stale-guard.sociobot.in/privacy'],
   ['/terms', 'Terms — Flag Stale Guard', 'https://flag-stale-guard.sociobot.in/terms'],
@@ -74,12 +74,12 @@ test('keyboard navigation exposes the skip link and moves focus after route chan
   const demoLink = page.getByRole('link', { name: 'Try it with sample data' });
   await demoLink.focus();
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/\/demo$/);
+  await expect(page).toHaveURL(/\/?\?demo=1$/);
   await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
 
   await page.getByRole('button', { name: 'Reset demo' }).focus();
   await page.keyboard.press('Space');
-  await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Reset demo' })).toBeFocused();
 });
 
 test('the demo reflows on a phone and keeps touch targets large enough', async ({ page }) => {
@@ -120,6 +120,16 @@ test('the loaded demo remains usable offline and does not pin stale app caches',
   await context.setOffline(true);
   await page.getByRole('button', { name: 'Reset demo' }).click();
   await expect(page.getByText('sample data, nothing is saved')).toBeVisible();
-  await page.getByRole('link', { name: 'Start for real' }).click();
-  await expect(page).toHaveTitle('Flag Stale Guard — inspect stale release flags');
+  await page.getByRole('link', { name: 'View install steps' }).click();
+  await expect(page).toHaveTitle('Flag Stale Guard — find flags ready for removal');
+  await expect(page.getByRole('heading', { name: 'Run it in a repository' })).toBeFocused();
+});
+
+test('the first-screen demo action uses the isolated direct demo URL', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByText('A command-line tool for release flag cleanup')).toBeVisible();
+  await page.getByRole('link', { name: 'Try it with sample data' }).click();
+  await expect(page).toHaveURL(/\/?\?demo=1$/);
+  await expect(page).toHaveTitle('Demo — Flag Stale Guard');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://flag-stale-guard.sociobot.in/demo');
 });
