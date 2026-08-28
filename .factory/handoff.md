@@ -75,7 +75,22 @@ Lighthouse 13.4.1 mobile results: Performance 100, Accessibility 100, Best Pract
 
 ## Deployment and live verification
 
-The static production output is `dist/site/`. Deployment and post-deploy identity evidence are recorded below after the committed artifact is uploaded.
+The committed repair `0d9c8bc` was pushed to `origin/main`. A clean `npm ci && npm run build:site` produced `dist/site/`, which was deployed with:
+
+```sh
+/opt/fleet/lib/deploy-static.sh flag-stale-guard dist/site
+```
+
+- Azure Static Web App: `sf-flag-stale-guard` in `centralus`
+- Deployment ID: `af04cde8-d3ed-4cab-86bd-c01976a24711`
+- Custom domain: `https://flag-stale-guard.sociobot.in`
+- `/`, `/demo`, `/privacy`, and `/terms` return HTTP 200. `/definitely-missing-repair-2` returns a real HTTP 404 and renders the designed not-found page.
+- Root and demo `verify-url.sh` checks pass with no JavaScript console errors. Evidence is in `/work/.evidence/repair-2/live-home/` and `/work/.evidence/repair-2/live-demo/`.
+- Independent live Chromium checks pass on all routes at 1440×900 and 390×844: correct status, title, one H1, main landmark, route canonical, no horizontal overflow, no sub-44 px targets, no unexpected console errors, no cross-origin requests, no cookies, and zero serious/critical axe findings. The 390 px checks also pass at a 34 px root font size.
+- Keyboard verification passes: the skip link is first, it focuses `<main>`, and client-side navigation focuses the new H1.
+- Live response headers include HSTS, the configured same-origin CSP, `nosniff`, and strict-origin referrer policy. HTML uses `max-age=30, must-revalidate`; hashed assets use `max-age=31536000, immutable`.
+- SHA-256 identity checks match local production output for `index.html`, `404.html`, the hero image, and the social image.
+- Live Lighthouse 13.4.1 mobile: Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP 856 ms; LCP 1,251 ms; TBT 20 ms; CLS 0; 68,669 total bytes. Evidence is `/work/.evidence/repair-2/live-lighthouse/report.json`.
 
 ## Known limits
 
