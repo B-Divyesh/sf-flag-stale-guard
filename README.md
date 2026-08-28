@@ -14,7 +14,7 @@ cargo install --path sf-flag-stale-guard
 flag-stale-guard scan --config sf-flag-stale-guard/examples/flag-stale-guard.toml --check
 ```
 
-Copy `examples/flag-stale-guard.toml` into your repository. List each flag with a `key`, `owner`, and `YYYY-MM-DD` `expires` date. Set `paths` to the source folders you want scanned. The default `literal` mode searches text files for the exact flag key.
+Copy `examples/flag-stale-guard.toml` into your repository. List each flag with a `key`, `owner`, and `YYYY-MM-DD` `expires` date. Set `paths` to the source folders you want scanned. The default `literal` mode searches text files for the exact flag key. A source reference is a file and line containing that key.
 
 ```toml
 paths = ["src"]

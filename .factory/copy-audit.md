@@ -66,3 +66,5 @@ All landing sentences are below 22 words. No banned marketing words appear.
 | Date after which cleanup starts | expiry date |
 | Proposed flag deletion test | removal check |
 | Static configuration matcher | literal mode |
+
+README definition: **A source reference is a file and line containing that key.** (11 words)
