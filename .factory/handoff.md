@@ -2,7 +2,8 @@
 
 Date: 2026-08-28  
 Work order: `flag-stale-guard-polish-1`  
-Repair commit: `8eff3a57dd36b054628686db0ba54e4413bc2705`
+Repair commit: `8eff3a57dd36b054628686db0ba54e4413bc2705`  
+Evidence commit: `37d344e`
 
 ## Delivered
 
@@ -34,8 +35,15 @@ The Chromium suite covers axe serious/critical checks, keyboard/focus, 390 px mo
 
 ## Deploy and live recheck
 
-The static deployment artifact is `dist/site/`; `8eff3a5` was pushed to `origin/main`. The deployment watcher had not yet served that revision at the time this handoff was drafted. Local `verify-url.sh` evidence is in `.factory/evidence/verify-local-home/` and `.factory/evidence/verify-local-demo/`; visual evidence is in `.factory/evidence/local-*.png`. Before completion, verify a cold live root, `/?demo=1`, privacy, terms, and a missing route; run `verify-url.sh` plus the browser axe suite; and update this section with the deployed commit, screenshots, and outcomes.
+The static deployment artifact is `dist/site/`; `8eff3a5` and the evidence commit were pushed to `origin/main`. Factory static deployment `723220f4-4758-4ff4-b51e-f7ab8d74f250` completed successfully to `https://flag-stale-guard.sociobot.in/`.
+
+Cold live verification passed:
+
+- `verify-url.sh` passed root and `/?demo=1` with no console/page errors, correct title/lang/H1/main, complete alt text, and labelled controls. Evidence: `.factory/evidence/verify-live-home/` and `.factory/evidence/verify-live-demo/`.
+- A live Playwright + axe sweep passed root, direct demo, privacy, terms, and `/missing-page` (HTTP 404) at 390 px. It found no serious/critical axe violations or horizontal overflow.
+- The live demo interaction marked a sample source reference, Reset demo removed that state and announced the reset, and View install steps focused the install heading.
+- Live screenshots: `.factory/evidence/live/home-390.png`, `.factory/evidence/live/demo-390.png`, and `.factory/evidence/live/404-1440.png`.
 
 ## Known gaps
 
-None in the repository repair. Live deployment propagation remains to be recorded in this handoff before final acceptance.
+None.
