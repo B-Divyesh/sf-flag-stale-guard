@@ -2,14 +2,14 @@ import { test, expect } from '@playwright/test';
 import axeSource from 'axe-core';
 
 const routes = [
-  ['/', 'Flag Stale Guard — inspect stale release flags'],
-  ['/demo', 'Demo — Flag Stale Guard'],
-  ['/privacy', 'Privacy — Flag Stale Guard'],
-  ['/terms', 'Terms — Flag Stale Guard'],
-  ['/missing-page', 'Not found — Flag Stale Guard']
+  ['/', 'Flag Stale Guard — inspect stale release flags', 'https://flag-stale-guard.sociobot.in/'],
+  ['/demo', 'Demo — Flag Stale Guard', 'https://flag-stale-guard.sociobot.in/demo'],
+  ['/privacy', 'Privacy — Flag Stale Guard', 'https://flag-stale-guard.sociobot.in/privacy'],
+  ['/terms', 'Terms — Flag Stale Guard', 'https://flag-stale-guard.sociobot.in/terms'],
+  ['/missing-page', 'Not found — Flag Stale Guard', 'https://flag-stale-guard.sociobot.in/missing-page']
 ];
 
-for (const [route, title] of routes) {
+for (const [route, title, canonical] of routes) {
   test(`${route} has its identity, landmarks, and no serious accessibility findings`, async ({ page }) => {
     const errors = [];
     page.on('console', message => {
@@ -20,6 +20,11 @@ for (const [route, title] of routes) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(route);
     await expect(page).toHaveTitle(title);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', canonical);
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', canonical);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /\S+/);
+    await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute('content', title);
+    await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute('content', /\S+/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.locator('header')).toHaveCount(1);
     await expect(page.locator('nav')).toHaveCount(1);
@@ -37,6 +42,27 @@ for (const [route, title] of routes) {
     expect(errors).toEqual([]);
   });
 }
+
+test('desktop landing and demo render without console, layout, or axe failures', async ({ page }) => {
+  const errors = [];
+  page.on('console', message => {
+    if (message.type() === 'error') errors.push(message.text());
+  });
+  page.on('pageerror', error => errors.push(error.message));
+  await page.setViewportSize({ width: 1440, height: 900 });
+
+  for (const route of ['/', '/demo']) {
+    await page.goto(route);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(1440);
+    await page.addScriptTag({ content: axeSource.source });
+    const violations = await page.evaluate(async () => {
+      const result = await window.axe.run(document);
+      return result.violations.filter(item => ['serious', 'critical'].includes(item.impact));
+    });
+    expect(violations).toEqual([]);
+  }
+  expect(errors).toEqual([]);
+});
 
 test('keyboard navigation exposes the skip link and moves focus after route changes', async ({ page }) => {
   await page.goto('/');
@@ -68,6 +94,19 @@ test('the demo reflows on a phone and keeps touch targets large enough', async (
   }));
   expect(layout.content).toBeLessThanOrEqual(layout.viewport);
   expect(layout.smallTargets).toEqual([]);
+});
+
+test('content reflows without horizontal page overflow at 200 percent text size', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const route of ['/', '/demo', '/privacy', '/terms']) {
+    await page.goto(route);
+    await page.evaluate(() => { document.documentElement.style.fontSize = '34px'; });
+    const layout = await page.evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      content: document.documentElement.scrollWidth
+    }));
+    expect(layout.content, `${route} overflowed at 200% text size`).toBeLessThanOrEqual(layout.viewport);
+  }
 });
 
 test('the loaded demo remains usable offline and does not pin stale app caches', async ({ page, context }) => {

@@ -28,4 +28,4 @@ Thin ink rules, rounded specimen labels, botanical line marks, and slightly offs
 
 `public/field-guide-hero.webp` is an original generated editorial illustration. It shows a pressed herbarium sheet with three tagged leaves, one dried and marked for removal, beside an engineer's pencil and small code-reference dots. It contains no readable text, logos, or third-party material. Generated with `/opt/fleet/lib/gen-image.sh`, deployment `factory-image`, then resized/optimized locally to WebP. The prompt is saved beside the asset as `public/field-guide-hero.png.json`.
 
-The social image is made from this same original art plus live HTML-like treatment; no stock imagery or third-party icons are used.
+`public/field-guide-social.webp` is a deterministic center crop of the same original artwork at 1200×630 for social cards. No new generated or third-party material was added.

@@ -1,3 +1,4 @@
+use chrono::{NaiveDate, Utc};
 use clap::{Parser, Subcommand};
 use serde::{Deserialize, Serialize};
 use std::{
@@ -185,7 +186,10 @@ fn inspect(config_path: &Path) -> Result<Vec<Finding>, String> {
     } else {
         config.paths
     };
-    let today = chrono::Utc::now().date_naive().to_string();
+    for configured_path in &paths {
+        validate_scan_path(&root.join(configured_path), configured_path)?;
+    }
+    let today = Utc::now().date_naive();
     config
         .flags
         .into_iter()
@@ -201,16 +205,17 @@ fn inspect(config_path: &Path) -> Result<Vec<Finding>, String> {
             for p in &paths {
                 collect_refs(&root.join(p), &flag.key, &config.exclude, root, &mut refs)?;
             }
-            let status = if flag.owner.as_deref().unwrap_or("").is_empty()
-                || flag.expires.as_deref().unwrap_or("").is_empty()
-            {
+            let owner = flag.owner.as_deref().map(str::trim).unwrap_or("");
+            let expiry = flag.expires.as_deref().map(str::trim).unwrap_or("");
+            let status = if owner.is_empty() || expiry.is_empty() {
                 "metadata missing"
-            }
-            // ISO dates sort lexically, which keeps comparison transparent in JSON output.
-            else if flag.expires.as_deref().unwrap() < today.as_str() {
-                "expired"
             } else {
-                "tracked"
+                match NaiveDate::parse_from_str(expiry, "%Y-%m-%d") {
+                    Ok(date) if date.format("%Y-%m-%d").to_string() != expiry => "metadata invalid",
+                    Ok(date) if date < today => "expired",
+                    Ok(_) => "tracked",
+                    Err(_) => "metadata invalid",
+                }
             };
             let mut checklist = Vec::new();
             if status == "expired" {
@@ -236,6 +241,34 @@ fn inspect(config_path: &Path) -> Result<Vec<Finding>, String> {
         })
         .collect()
 }
+
+fn validate_scan_path(path: &Path, configured_path: &str) -> Result<(), String> {
+    let metadata = fs::metadata(path).map_err(|error| {
+        format!("configured scan path `{configured_path}` cannot be read: {error}")
+    })?;
+    if !metadata.is_dir() && !metadata.is_file() {
+        return Err(format!(
+            "configured scan path `{configured_path}` is not a file or directory"
+        ));
+    }
+    if metadata.is_file() {
+        match fs::read_to_string(path) {
+            Ok(_) => {}
+            Err(error) if error.kind() == io::ErrorKind::InvalidData => {
+                return Err(format!(
+                    "configured scan path `{configured_path}` is not UTF-8 text"
+                ));
+            }
+            Err(error) => {
+                return Err(format!(
+                    "configured scan path `{configured_path}` cannot be read: {error}"
+                ));
+            }
+        }
+    }
+    Ok(())
+}
+
 fn collect_refs(
     path: &Path,
     key: &str,
@@ -243,11 +276,10 @@ fn collect_refs(
     root: &Path,
     out: &mut Vec<String>,
 ) -> Result<(), String> {
-    if !path.exists() {
-        return Ok(());
-    }
     if path.is_dir() {
-        for item in fs::read_dir(path).map_err(io_err)? {
+        for item in fs::read_dir(path)
+            .map_err(|error| format!("could not scan `{}`: {error}", path.display()))?
+        {
             let child = item.map_err(io_err)?.path();
             collect_refs(&child, key, excludes, root, out)?;
         }
@@ -264,11 +296,14 @@ fn collect_refs(
     {
         return Ok(());
     }
-    if let Ok(text) = fs::read_to_string(path) {
-        for (line, content) in text.lines().enumerate() {
-            if content.contains(key) {
-                out.push(format!("{}:{}", relative, line + 1));
-            }
+    let text = match fs::read_to_string(path) {
+        Ok(text) => text,
+        Err(error) if error.kind() == io::ErrorKind::InvalidData => return Ok(()),
+        Err(error) => return Err(format!("could not scan `{relative}`: {error}")),
+    };
+    for (line, content) in text.lines().enumerate() {
+        if content.contains(key) {
+            out.push(format!("{}:{}", relative, line + 1));
         }
     }
     Ok(())
@@ -303,6 +338,39 @@ fn print_findings(findings: &[Finding], json: bool) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    struct Fixture(PathBuf);
+
+    impl Fixture {
+        fn new(name: &str) -> Self {
+            let nonce = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos();
+            let path = std::env::temp_dir().join(format!(
+                "flag-stale-guard-{name}-{}-{nonce}",
+                std::process::id()
+            ));
+            fs::create_dir_all(path.join("src")).unwrap();
+            Self(path)
+        }
+
+        fn write(&self, relative: &str, contents: &str) {
+            fs::write(self.0.join(relative), contents).unwrap();
+        }
+
+        fn config(&self) -> PathBuf {
+            self.0.join("flag-stale-guard.toml")
+        }
+    }
+
+    impl Drop for Fixture {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.0);
+        }
+    }
+
     #[test]
     fn scan_sample_finds_expired_flag_and_references() {
         let v = inspect(Path::new("examples/flag-stale-guard.toml")).unwrap();
@@ -317,5 +385,59 @@ mod tests {
             v.iter().find(|x| x.key == "checkout-v2").unwrap().status,
             "tracked"
         );
+    }
+
+    #[test]
+    fn missing_configured_path_fails_closed() {
+        let fixture = Fixture::new("missing-path");
+        fixture.write(
+            "flag-stale-guard.toml",
+            "paths = [\"source-typo\"]\n[[flags]]\nkey = \"old-flag\"\nowner = \"Maintainer\"\nexpires = \"2026-12-01\"\n",
+        );
+
+        let error = inspect(&fixture.config()).unwrap_err();
+        assert!(error.contains("configured scan path `source-typo` cannot be read"));
+    }
+
+    #[test]
+    fn malformed_expiry_is_invalid_metadata() {
+        let fixture = Fixture::new("bad-expiry");
+        fixture.write("src/app.ts", "export const flag = 'old-flag';\n");
+        fixture.write(
+            "flag-stale-guard.toml",
+            "paths = [\"src\"]\n[[flags]]\nkey = \"old-flag\"\nowner = \"Maintainer\"\nexpires = \"tomorrow\"\n",
+        );
+
+        let findings = inspect(&fixture.config()).unwrap();
+        assert_eq!(findings[0].status, "metadata invalid");
+    }
+
+    #[test]
+    fn whitespace_owner_is_missing_metadata() {
+        let fixture = Fixture::new("blank-owner");
+        fixture.write("src/app.ts", "export const flag = 'old-flag';\n");
+        fixture.write(
+            "flag-stale-guard.toml",
+            "paths = [\"src\"]\n[[flags]]\nkey = \"old-flag\"\nowner = \"   \"\nexpires = \"2026-12-01\"\n",
+        );
+
+        let findings = inspect(&fixture.config()).unwrap();
+        assert_eq!(findings[0].status, "metadata missing");
+    }
+
+    #[test]
+    fn expiry_equal_to_today_remains_tracked() {
+        let fixture = Fixture::new("today-boundary");
+        fixture.write("src/app.ts", "export const flag = 'today-flag';\n");
+        fixture.write(
+            "flag-stale-guard.toml",
+            &format!(
+                "paths = [\"src\"]\n[[flags]]\nkey = \"today-flag\"\nowner = \"Maintainer\"\nexpires = \"{}\"\n",
+                Utc::now().date_naive()
+            ),
+        );
+
+        let findings = inspect(&fixture.config()).unwrap();
+        assert_eq!(findings[0].status, "tracked");
     }
 }

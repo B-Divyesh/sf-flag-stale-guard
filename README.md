@@ -6,11 +6,12 @@ Flag Stale Guard is a free, local Rust CLI. It reads static configuration, check
 
 ## Install and use
 
-Build the binary from a checkout:
+Install the binary from a checkout:
 
 ```sh
-cargo build --release
-./target/release/flag-stale-guard scan --config examples/flag-stale-guard.toml --check
+git clone https://github.com/B-Divyesh/sf-flag-stale-guard.git
+cargo install --path sf-flag-stale-guard
+flag-stale-guard scan --config sf-flag-stale-guard/examples/flag-stale-guard.toml --check
 ```
 
 Copy `examples/flag-stale-guard.toml` into your repository. List each flag with a `key`, `owner`, and ISO `expires` date. Set `paths` to the source folders you want scanned. The default `literal` adapter looks for the exact flag key in text files.
@@ -32,7 +33,11 @@ flag-stale-guard scan --config flag-stale-guard.toml --check
 flag-stale-guard scan --config flag-stale-guard.toml --json
 ```
 
-`--check` exits `2` when any flag is expired or missing metadata. Check a proposed deletion with:
+`--check` exits `2` when a flag is expired or has missing or invalid metadata. Owners cannot be blank. Expiry dates must use `YYYY-MM-DD`.
+
+A missing or unreadable configured scan path is an error. The CLI exits `1` instead of treating that path as clear.
+
+Check a proposed deletion with:
 
 ```sh
 flag-stale-guard remove-check legacy-cart --config flag-stale-guard.toml
@@ -71,7 +76,7 @@ npm run build:site    # static site -> dist/site/
 cargo build --release # CLI -> target/release/flag-stale-guard
 ```
 
-`cargo package` produces the ready-to-publish crate. Publishing is intentionally left to the factory.
+`cargo package` produces the ready-to-publish crate. Publishing is intentionally left to the factory, so the docs use the working checkout install until a registry release exists.
 
 ## Privacy and license
 

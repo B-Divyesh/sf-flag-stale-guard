@@ -1,16 +1,93 @@
 [
   {
+    "id": "metadata-gate",
+    "claim": "The CLI checks owners and ISO expiry dates; --check exits 2 for expired, missing, or invalid metadata.",
+    "where": "Landing page and README",
+    "test": "npm test -- --grep @claim:metadata-gate",
+    "sandbox": "fresh temp repository; packaged CLI; expired date, malformed date, and whitespace owner; assert statuses and exit 2"
+  },
+  {
+    "id": "literal-references",
+    "claim": "The CLI finds literal flag keys only inside configured scan paths.",
+    "where": "Landing page, privacy page, and README",
+    "test": "npm test -- --grep @claim:literal-references",
+    "sandbox": "fresh temp repository; packaged CLI; matching files inside and outside configured path; assert only in-scope reference"
+  },
+  {
+    "id": "fail-closed-paths",
+    "claim": "The CLI exits 1 when a configured scan path is missing or cannot be scanned as text.",
+    "where": "README",
+    "test": "npm test -- --grep @claim:fail-closed-paths",
+    "sandbox": "fresh temp repositories; packaged CLI in human and JSON modes; missing path and non-UTF-8 configured file; assert exit 1 and no safe-removal output"
+  },
+  {
+    "id": "expired-checklist",
+    "claim": "The CLI prints a removal checklist for an expired flag.",
+    "where": "Landing page and README",
+    "test": "npm test -- --grep @claim:expired-checklist",
+    "sandbox": "fresh temp repository; packaged CLI; expired flag; assert complete human-readable checklist"
+  },
+  {
     "id": "sample-removal-block",
-    "claim": "The sample blocks removal while two source references remain.",
+    "claim": "The bundled sample blocks removal with exit 3 while two source references remain.",
     "where": "Demo page and README",
     "test": "npm test -- --grep @claim:sample-removal-block",
-    "sandbox": "fresh browser context at /demo; assert the visible two-reference removal block"
+    "sandbox": "packaged CLI against shipped examples plus fresh browser context at /demo; assert exit 3 and the same two references"
+  },
+  {
+    "id": "clear-removal-check",
+    "claim": "remove-check exits 0 when no literal references exist in every configured path.",
+    "where": "README",
+    "test": "npm test -- --grep @claim:clear-removal-check",
+    "sandbox": "fresh temp repository; packaged CLI; existing configured path with no matching key; assert exit 0 and safe result"
+  },
+  {
+    "id": "json-output",
+    "claim": "The CLI returns structured JSON for scans and removal checks.",
+    "where": "README",
+    "test": "npm test -- --grep @claim:json-output",
+    "sandbox": "fresh temp repository; packaged CLI scan and remove-check with --json; parse both outputs and assert their documented fields"
+  },
+  {
+    "id": "demo-sandbox",
+    "claim": "The CLI demo changes nothing in the current repository, and the website demo saves no browser data.",
+    "where": "Demo page, demo documentation, and README",
+    "test": "npm test -- --grep @claim:demo-sandbox",
+    "sandbox": "packaged CLI with git status before and after plus fresh browser context; assert unchanged tree and empty storage"
   },
   {
     "id": "local-source",
     "claim": "The CLI sends no source code away.",
     "where": "Landing facts, privacy page, and README",
     "test": "npm test -- --grep @claim:local-source",
-    "sandbox": "fresh browser context at /demo; assert no cross-origin network requests"
+    "sandbox": "fresh temp repository; packaged CLI executed with a preload guard that terminates on socket, connect, or sendto; assert successful source scan and no network syscall"
+  },
+  {
+    "id": "website-private",
+    "claim": "The website has no analytics, cookies, accounts, payments, or saved demo data.",
+    "where": "Privacy page and README",
+    "test": "npm test -- --grep @claim:website-private",
+    "sandbox": "fresh browser context across landing, demo, and privacy; assert same-origin requests, no cookies or storage, and no account or payment controls"
+  },
+  {
+    "id": "github-action-gate",
+    "claim": "The GitHub composite action runs the same --check gate.",
+    "where": "README",
+    "test": "npm test -- --grep @claim:github-action-gate",
+    "sandbox": "fresh consumer directories; inspect action command and run its manifest/config invocation; assert expired sample exits 2 and a missing path exits 1"
+  },
+  {
+    "id": "mit-license",
+    "claim": "Flag Stale Guard is MIT licensed.",
+    "where": "Landing page and README",
+    "test": "npm test -- --grep @claim:mit-license",
+    "sandbox": "repository license plus production landing page; assert MIT license text and visible fact"
+  },
+  {
+    "id": "checkout-install",
+    "claim": "The CLI installs and runs from a repository checkout without a registry release.",
+    "where": "Landing install section and README",
+    "test": "npm test -- --grep @claim:checkout-install",
+    "sandbox": "cargo package and cargo install --path into an isolated root; assert packaged version and checkout install copy"
   }
 ]

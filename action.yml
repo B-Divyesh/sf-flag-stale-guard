@@ -1,5 +1,5 @@
 name: Flag Stale Guard
-description: Block CI when configured release flags are expired, missing metadata, or still referenced during removal review.
+description: Block CI when release flags are expired, have invalid metadata, or cannot be scanned safely.
 inputs:
   config:
     description: Path to the Flag Stale Guard TOML file in the checked-out repository.
