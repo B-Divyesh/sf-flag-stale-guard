@@ -32,7 +32,7 @@ enum Command {
         )]
         check: bool,
     },
-    /// Refuse removal while a flag still has live source references.
+    /// Refuse removal while a flag still has source references.
     RemoveCheck {
         flag: String,
         #[arg(short, long, default_value = "flag-stale-guard.toml")]
@@ -113,7 +113,7 @@ fn run(cli: Cli) -> Result<u8, String> {
             if found.references.is_empty() {
                 if !json {
                     println!(
-                        "Safe to remove `{}`: no live references were found in configured paths.",
+                        "Safe to remove `{}`: no source references were found in configured paths.",
                         found.key
                     );
                 }
@@ -121,7 +121,7 @@ fn run(cli: Cli) -> Result<u8, String> {
             } else {
                 if !json {
                     println!(
-                        "Removal blocked for `{}`: {} live reference(s) remain.",
+                        "Removal blocked for `{}`: {} source reference(s) remain.",
                         found.key,
                         found.references.len()
                     );
@@ -222,7 +222,7 @@ fn inspect(config_path: &Path) -> Result<Vec<Finding>, String> {
                 checklist.extend(
                     [
                         "Confirm the flag's rollout is complete.",
-                        "Remove every live reference listed below.",
+                        "Remove every source reference listed below.",
                         "Delete the flag from its provider after code cleanup.",
                         "Run the test suite before release.",
                     ]
@@ -322,7 +322,7 @@ fn print_findings(findings: &[Finding], json: bool) {
             f.expires.as_deref().unwrap_or("missing"),
             f.adapter
         );
-        println!("  live references: {}", f.references.len());
+        println!("  source references: {}", f.references.len());
         for r in &f.references {
             println!("    {r}");
         }

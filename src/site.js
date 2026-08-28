@@ -12,7 +12,7 @@ let reviewedReference = false;
 const metadata = {
   '/': {
     title: 'Flag Stale Guard — find flags ready for removal',
-    description: 'Find release flags ready for removal and block it while source references remain.'
+    description: 'Find expired release flags and block removal while source references remain.'
   },
   '/demo': {
     title: 'Demo — Flag Stale Guard',
@@ -34,7 +34,7 @@ const metadata = {
 
 function nav() { return `<header><a class="mark" href="/" data-route><span aria-hidden="true">✣</span> Flag Stale Guard</a><nav aria-label="Main navigation"><a href="/?demo=1" data-route>Demo</a><a href="/#how">How it works</a><a href="/privacy" data-route>Privacy</a></nav></header>`; }
 function foot() { return `<footer><p>Local checks for configured release flags.</p><p><a href="/privacy" data-route>Privacy</a> · <a href="/terms" data-route>Terms</a> · Built by Param Factory · v0.1.0</p></footer>`; }
-function heroArt() { return `<figure class="hero-art"><img src="/field-guide-hero.webp" width="1200" height="800" fetchpriority="high" alt="Pressed green and dried red leaves on a field-guide page, representing active and expired flags." /><figcaption>Specimen sheet 01 · inspect before removal</figcaption></figure>`; }
+function heroArt() { return `<figure class="hero-art"><img src="/field-guide-hero.webp" width="1200" height="800" fetchpriority="high" alt="Pressed green and dried red leaves on a field-guide page, representing active and expired flags." /></figure>`; }
 function home() { return `${nav()}<main id="main" tabindex="-1"><section class="hero"><div><p class="eyebrow">A command-line tool for release flag cleanup</p><h1>Find flags ready for removal</h1><p class="lede">For maintainers who need to remove old flags without leaving source references behind.</p><p class="actions"><a class="button" href="/?demo=1" data-route>Try it with sample data</a><span>See an expired flag and its source references.</span></p><ul class="facts"><li>Runs from a repository checkout.</li><li>Sends no source code away.</li><li>MIT licensed.</li></ul></div>${heroArt()}</section><section class="terminal-wrap" aria-labelledby="preview-title"><div class="section-label"><p class="eyebrow">Sample scan</p><h2 id="preview-title">See the removal gate before install</h2></div><pre class="terminal"><code><span class="prompt">$</span> flag-stale-guard scan --config flag-stale-guard.toml --check
 
 legacy-cart — <b>expired</b>
@@ -54,7 +54,7 @@ function flagCard(f) { const status = f.status === 'Expired' ? 'danger' : 'good'
 function legal(title, content) { return `${nav()}<main id="main" tabindex="-1" class="prose"><p class="eyebrow">Flag Stale Guard</p><h1>${title}</h1>${content}</main>${foot()}`; }
 function privacy() { return legal('Privacy for local flag checks', '<p>Flag Stale Guard does not collect analytics or send source code to a service.</p><p>The CLI searches only the paths you configure. The website demo uses fixed sample data in your browser and does not store it.</p><p>There are no accounts, payments, or cookies.</p>'); }
 function terms() { return legal('Terms for Flag Stale Guard', '<p>Flag Stale Guard is provided under the MIT License.</p><p>Source search is a removal aid. It cannot prove runtime behavior or replace review and tests.</p><p>Use it with your repository practices and release checks.</p>'); }
-function missing() { return legal('This field guide page is missing', '<p>The page may have moved or the address may be wrong.</p><p><a href="/" data-route>Return to the flag inventory guide.</a></p>'); }
+function missing() { return legal('Page not found', '<p>The page may have moved, or the address may be wrong.</p><p><a href="/" data-route>Return to Flag Stale Guard home.</a></p>'); }
 function setMetadata(path) {
   const values = metadata[path];
   const canonicalPath = path === '/404.html' ? location.pathname : path;
@@ -73,5 +73,44 @@ function activePath() {
   if (location.search.includes('demo=1')) return '/demo';
   return routes[location.pathname] ? location.pathname : '/404.html';
 }
-function render(focusHeading = false, demoMessage = '') { const path = activePath(); app.innerHTML = `${routes[path]()}<p id="route-status" class="sr-only" aria-live="polite"></p>`; setMetadata(path); document.querySelectorAll('pre').forEach(region => { region.tabIndex = 0; }); const heading = document.querySelector('h1'); if (heading) { heading.tabIndex = -1; if (focusHeading) heading.focus({ preventScroll: true }); document.querySelector('#route-status').textContent = heading.textContent; } const notice = document.querySelector('#demo-notice'); if (notice && demoMessage) notice.textContent = demoMessage; document.querySelector('#reset')?.addEventListener('click', () => { reviewedReference = false; render(false, 'Demo reset to the original three flags.'); document.querySelector('#reset').focus(); }); document.querySelector('#review-reference')?.addEventListener('click', () => { reviewedReference = !reviewedReference; render(false, reviewedReference ? 'First source reference marked reviewed in this demo.' : 'First source reference is no longer marked reviewed.'); document.querySelector('#review-reference').focus(); }); document.querySelectorAll('[data-route]').forEach(link => link.addEventListener('click', e => { e.preventDefault(); const href = link.getAttribute('href'); history.pushState({}, '', href); render(true); const install = document.querySelector('#install-title'); if (location.hash === '#install' && install) { install.scrollIntoView(); install.focus({ preventScroll: true }); } else { window.scrollTo(0, 0); } })); }
-window.addEventListener('popstate', () => render(true)); render();
+const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function focusKey(element = document.activeElement) {
+  if (!element || element === document.body || element === document.documentElement) return 'heading';
+  if (element.id) return `#${element.id}`;
+  const index = [...document.querySelectorAll(focusableSelector)].indexOf(element);
+  return index >= 0 ? `focusable:${index}` : 'heading';
+}
+
+function findFocusTarget(key) {
+  if (key?.startsWith('#')) return document.querySelector(key);
+  if (key?.startsWith('focusable:')) return document.querySelectorAll(focusableSelector)[Number(key.slice(10))];
+  return document.querySelector('h1');
+}
+
+function saveCurrentEntry() {
+  history.replaceState({
+    ...(history.state ?? {}),
+    scrollX: window.scrollX,
+    scrollY: window.scrollY,
+    focus: focusKey()
+  }, '');
+}
+
+function restoreEntry(state) {
+  const saved = state ?? {};
+  requestAnimationFrame(() => {
+    window.scrollTo(saved.scrollX ?? 0, saved.scrollY ?? 0);
+    const target = findFocusTarget(saved.focus);
+    target?.focus({ preventScroll: true });
+  });
+}
+
+function render(focusHeading = false, demoMessage = '') { const path = activePath(); app.innerHTML = `${routes[path]()}<p id="route-status" class="sr-only" aria-live="polite"></p>`; setMetadata(path); document.querySelectorAll('pre').forEach(region => { region.tabIndex = 0; }); const heading = document.querySelector('h1'); if (heading) { heading.tabIndex = -1; if (focusHeading) heading.focus({ preventScroll: true }); document.querySelector('#route-status').textContent = heading.textContent; } const notice = document.querySelector('#demo-notice'); if (notice && demoMessage) notice.textContent = demoMessage; document.querySelector('#reset')?.addEventListener('click', () => { reviewedReference = false; render(false, 'Demo reset to the original three flags.'); document.querySelector('#reset').focus(); }); document.querySelector('#review-reference')?.addEventListener('click', () => { reviewedReference = !reviewedReference; render(false, reviewedReference ? 'First source reference marked reviewed in this demo.' : 'First source reference is no longer marked reviewed.'); document.querySelector('#review-reference').focus(); }); document.querySelectorAll('[data-route]').forEach(link => link.addEventListener('click', e => { e.preventDefault(); const href = link.getAttribute('href'); saveCurrentEntry(); history.pushState({ scrollX: 0, scrollY: 0, focus: 'heading' }, '', href); render(true); const install = document.querySelector('#install-title'); if (location.hash === '#install' && install) { install.scrollIntoView(); install.focus({ preventScroll: true }); requestAnimationFrame(saveCurrentEntry); } else { window.scrollTo(0, 0); } })); }
+
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.addEventListener('pagehide', saveCurrentEntry);
+window.addEventListener('scroll', saveCurrentEntry, { passive: true });
+document.addEventListener('focusin', saveCurrentEntry);
+window.addEventListener('popstate', event => { render(false); restoreEntry(event.state); });
+render();

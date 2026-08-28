@@ -122,7 +122,7 @@ test('@claim:sample-removal-block the same sample blocks CLI and website removal
     resolve('examples/flag-stale-guard.toml')
   ]);
   expect(result.status).toBe(3);
-  expect(result.stdout).toContain('2 live reference(s) remain');
+  expect(result.stdout).toContain('2 source reference(s) remain');
   expect(result.stdout).toContain('src/checkout.ts:6');
   expect(result.stdout).toContain('src/legacy.ts:1');
 
@@ -139,7 +139,7 @@ test('@claim:clear-removal-check remove-check exits zero only after configured r
   );
   const result = run(['remove-check', 'old-flag', '--config', 'flag-stale-guard.toml'], { cwd: directory });
   expect(result.status).toBe(0);
-  expect(result.stdout).toContain('no live references were found in configured paths');
+  expect(result.stdout).toContain('no source references were found in configured paths');
 });
 
 test('@claim:json-output scan and remove-check return parseable structured output', async () => {
@@ -166,6 +166,7 @@ test('@claim:demo-sandbox CLI and website demos leave the current repository and
   const after = execFileSync('git', ['status', '--porcelain=v1'], { cwd: repository, encoding: 'utf8' });
   expect(result.status).toBe(0);
   expect(result.stdout).toContain('Sample data only; nothing in your repository changed.');
+  expect(result.stdout).toContain('source references: 2');
   const workspace = result.stdout.match(/^Demo workspace: (.+)$/m)?.[1];
   expect(workspace).toBeTruthy();
   expect(existsSync(join(workspace, 'flag-stale-guard.toml'))).toBe(true);

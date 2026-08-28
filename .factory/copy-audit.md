@@ -1,6 +1,6 @@
 # Copy audit
 
-Catalog description: **Find release flags ready for removal before source references remain.** (10 words)
+Catalog description: **Find expired release flags and source references before removal.** (9 words)
 
 All landing sentences are below 22 words. No banned marketing words appear.
 
@@ -14,11 +14,10 @@ All landing sentences are below 22 words. No banned marketing words appear.
 | Runs from a repository checkout. | 5 |
 | Sends no source code away. | 5 |
 | MIT licensed. | 2 |
-| Specimen sheet 01 · inspect before removal | 7 |
 | Sample scan | 2 |
-| See the removal gate before install | 7 |
+| See the removal gate before install | 6 |
 | Exit 2: expired flags need attention. | 6 |
-| How it works | 4 |
+| How it works | 3 |
 | Find expired flags and remaining references | 6 |
 | List each flag. | 3 |
 | Add an owner and a `YYYY-MM-DD` expiry date to one config file. | 11 |
@@ -28,7 +27,7 @@ All landing sentences are below 22 words. No banned marketing words appear.
 | Get a checklist after expiry. | 5 |
 | Block removal while source references remain. | 6 |
 | Clear limits | 2 |
-| What Flag Stale Guard does not decide | 8 |
+| What Flag Stale Guard does not decide | 7 |
 | It finds configured source references. | 5 |
 | It cannot tell which users see a flag or prove what your code does when it runs. | 17 |
 | Review the checklist and your tests before deleting a flag. | 10 |
@@ -36,7 +35,16 @@ All landing sentences are below 22 words. No banned marketing words appear.
 | Run it in a repository | 5 |
 | Read the repository on GitHub (opens another site) | 8 |
 | Local checks for configured release flags. | 6 |
-| Built by Param Factory · v0.1.0 | 6 |
+| Built by Param Factory · v0.1.0 | 5 |
+
+## Search and error pages
+
+| Text | Words |
+|---|---:|
+| Find expired release flags and block removal while source references remain. | 11 |
+| Page not found | 3 |
+| The page may have moved, or the address may be wrong. | 11 |
+| Return to Flag Stale Guard home. | 6 |
 
 ## Demo page
 

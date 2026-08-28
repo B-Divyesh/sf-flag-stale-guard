@@ -82,6 +82,39 @@ test('keyboard navigation exposes the skip link and moves focus after route chan
   await expect(page.getByRole('button', { name: 'Reset demo' })).toBeFocused();
 });
 
+test('Back and Forward restore each route’s scroll position and focus', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.evaluate(() => window.scrollTo(0, 1665));
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(1600);
+
+  await page.getByLabel('Main navigation').getByRole('link', { name: 'Privacy' }).evaluate(link => link.click());
+  await expect(page).toHaveURL('/privacy');
+  await expect(page.getByRole('heading', { name: 'Privacy for local flag checks' })).toBeFocused();
+
+  await page.goBack();
+  await expect(page).toHaveURL('/');
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(1600);
+  await expect(page.getByRole('heading', { name: 'Find flags ready for removal' })).toBeFocused();
+
+  await page.goForward();
+  await expect(page).toHaveURL('/privacy');
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await expect(page.getByRole('heading', { name: 'Privacy for local flag checks' })).toBeFocused();
+});
+
+test('plain error and sharing copy name the page and removal action', async ({ page }) => {
+  await page.goto('/missing-page');
+  await expect(page.getByRole('heading', { name: 'Page not found' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Return to Flag Stale Guard home.' })).toBeVisible();
+  await page.goto('/');
+  const expected = 'Find expired release flags and block removal while source references remain.';
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', expected);
+  await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', expected);
+  await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute('content', expected);
+  await expect(page.locator('figcaption')).toHaveCount(0);
+});
+
 test('the demo reflows on a phone and keeps touch targets large enough', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/demo');
