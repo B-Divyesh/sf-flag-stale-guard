@@ -1,0 +1,16 @@
+[
+  {
+    "id": "sample-removal-block",
+    "claim": "The sample blocks removal while two source references remain.",
+    "where": "Demo page and README",
+    "test": "npm test -- --grep @claim:sample-removal-block",
+    "sandbox": "fresh browser context at /demo; assert the visible two-reference removal block"
+  },
+  {
+    "id": "local-source",
+    "claim": "The CLI sends no source code away.",
+    "where": "Landing facts, privacy page, and README",
+    "test": "npm test -- --grep @claim:local-source",
+    "sandbox": "fresh browser context at /demo; assert no cross-origin network requests"
+  }
+]

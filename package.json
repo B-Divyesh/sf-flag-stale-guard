@@ -1,0 +1,15 @@
+{
+  "name": "flag-stale-guard-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:site": "vite build",
+    "test": "cargo test && playwright test",
+    "test:cli": "cargo test",
+    "preview": "vite preview"
+  },
+  "devDependencies": {"@playwright/test": "1.58.2", "vite": "6.1.0"}
+}

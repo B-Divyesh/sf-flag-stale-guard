@@ -1,0 +1,21 @@
+# Static adapter: exact key search in configured paths. It does not claim runtime safety.
+paths = ["src"]
+exclude = ["node_modules", "dist"]
+
+[[flags]]
+key = "checkout-v2"
+owner = "Mina"
+expires = "2026-12-01"
+adapter = "literal"
+
+[[flags]]
+key = "legacy-cart"
+owner = "Drew"
+expires = "2026-02-15"
+adapter = "literal"
+
+[[flags]]
+key = "billing-surge-cap"
+owner = "Inez"
+expires = "2026-10-01"
+adapter = "literal"
