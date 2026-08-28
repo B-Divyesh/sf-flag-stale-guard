@@ -67,7 +67,7 @@ Requirements: Rust stable and Node 20+.
 ```sh
 npm install
 npm test              # cargo tests plus browser claim checks
-npm run build:site    # static site -> dist/
+npm run build:site    # static site -> dist/site/
 cargo build --release # CLI -> target/release/flag-stale-guard
 ```
 
