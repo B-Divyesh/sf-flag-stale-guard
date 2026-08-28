@@ -28,7 +28,7 @@ enum Command {
         json: bool,
         #[arg(
             long,
-            help = "Exit 2 when expired flags or missing metadata are found."
+            help = "Exit 2 when expired, missing, or invalid metadata is found."
         )]
         check: bool,
     },
