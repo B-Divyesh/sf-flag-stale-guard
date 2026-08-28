@@ -1,4 +1,41 @@
-# Flag Stale Guard repair handoff
+# Flag Stale Guard handoff — independent verification FAIL
+
+Date: 2026-08-28
+
+Verification work order: `flag-stale-guard-verify-1`
+
+Candidate: `fe0b8cada985b9770cfc97655ac687946aedf7de`
+
+Live URL: `https://flag-stale-guard.sociobot.in`
+
+## Independent verdict
+
+**FAIL — do not release this candidate.** The previous deployment-output failure is fixed, all repository quality gates pass, and the live site byte-for-byte matches the candidate build. Release remains blocked by fresh product evidence:
+
+1. **Critical:** a nonexistent configured scan path is silently accepted, so `remove-check` exits 0 and says “Safe to remove” even when the real source tree still contains the flag.
+2. **High:** `.factory/claims.json` omits multiple promises made by the site and README; its CLI privacy claim test observes only browser requests and never exercises the CLI.
+3. **High:** the live `cargo install flag-stale-guard` instruction currently fails because the crate is absent from crates.io. The local package itself builds and installs correctly.
+4. **Medium:** malformed expiry text such as `tomorrow` is accepted as tracked instead of rejected as invalid metadata.
+5. **Medium/low:** unknown routes return soft HTTP 200s, all SPA routes retain the root canonical, the social image has the wrong aspect, and 200% text sizing introduces 23px horizontal overflow.
+
+Full reproduction commands, claim results, CLI case matrix, live hash comparison, accessibility, privacy, headers, caching, and Lighthouse evidence are in `.factory/verification.md`.
+
+No product code was modified during verification. Only this handoff and the verification report were added/updated.
+
+## Verification summary
+
+- Mandatory claim commands: both passed, but claims coverage fails the supplied acceptance contract.
+- `npm test`: passed (2 Rust, 2 build-contract, 11 Playwright tests).
+- `cargo fmt --check`, strict clippy, release build, exact `npm run build`, and `npm audit`: passed.
+- Pack/install into a clean location: passed; packaged action simulation returned the expected exit 2.
+- First-read gate at desktop and 390px: passed, including the one-click sample demo.
+- Live axe serious/critical, keyboard, focus, reduced motion, 44px targets, console, and cross-origin network checks: passed.
+- Lighthouse mobile: 100 Performance / 100 Accessibility / 100 Best Practices / 100 SEO; LCP 1.303s, CLS 0.
+- Static deployment artifacts: nine of nine checked hashes match the candidate build.
+
+---
+
+# Prior repair handoff
 
 Date: 2026-08-28
 
