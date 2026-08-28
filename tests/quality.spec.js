@@ -17,6 +17,7 @@ for (const [route, title] of routes) {
     });
     page.on('pageerror', error => errors.push(error.message));
 
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(route);
     await expect(page).toHaveTitle(title);
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
