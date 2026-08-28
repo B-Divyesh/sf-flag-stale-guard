@@ -1,0 +1,89 @@
+{
+  "base": "https://flag-stale-guard.sociobot.in",
+  "reports": [
+    {
+      "route": "/",
+      "status": 200,
+      "title": "Flag Stale Guard — find flags ready for removal",
+      "h1": "Find flags ready for removal",
+      "canonical": "https://flag-stale-guard.sociobot.in/",
+      "overflow": true,
+      "axe": [],
+      "errors": [],
+      "foreign": []
+    },
+    {
+      "route": "/demo",
+      "status": 200,
+      "title": "Demo — Flag Stale Guard",
+      "h1": "Inspect three configured flags",
+      "canonical": "https://flag-stale-guard.sociobot.in/demo",
+      "overflow": true,
+      "axe": [],
+      "errors": [],
+      "foreign": []
+    },
+    {
+      "route": "/privacy",
+      "status": 200,
+      "title": "Privacy — Flag Stale Guard",
+      "h1": "Privacy for local flag checks",
+      "canonical": "https://flag-stale-guard.sociobot.in/privacy",
+      "overflow": true,
+      "axe": [],
+      "errors": [],
+      "foreign": []
+    },
+    {
+      "route": "/terms",
+      "status": 200,
+      "title": "Terms — Flag Stale Guard",
+      "h1": "Terms for Flag Stale Guard",
+      "canonical": "https://flag-stale-guard.sociobot.in/terms",
+      "overflow": true,
+      "axe": [],
+      "errors": [],
+      "foreign": []
+    },
+    {
+      "route": "/definitely-missing-polish-3",
+      "status": 404,
+      "title": "Not found — Flag Stale Guard",
+      "h1": "Page not found",
+      "canonical": "https://flag-stale-guard.sociobot.in/definitely-missing-polish-3",
+      "overflow": true,
+      "axe": [],
+      "errors": [],
+      "foreign": []
+    },
+    {
+      "route": "recording",
+      "status": 200,
+      "imageStatus": 200,
+      "asset": "/cli-demo-recording.svg",
+      "transcript": true,
+      "layout200": true,
+      "storage": {
+        "local": 0,
+        "session": 0
+      },
+      "cookies": []
+    },
+    {
+      "route": "demo-reset",
+      "status": 200,
+      "banner": "Demo — sample data, nothing is saved.\nReset demo\nView install steps",
+      "flags": 3,
+      "reset": "Demo reset to the original three flags.",
+      "storage": {
+        "local": 0,
+        "session": 0
+      }
+    },
+    {
+      "route": "history",
+      "scroll": 1665,
+      "focus": true
+    }
+  ]
+}

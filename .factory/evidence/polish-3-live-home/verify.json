@@ -1,0 +1,14 @@
+{
+  "url": "https://flag-stale-guard.sociobot.in/",
+  "loadMs": 1760,
+  "errors": [],
+  "a11y": {
+    "title": "Flag Stale Guard — find flags ready for removal",
+    "lang": "en",
+    "h1": 1,
+    "main": true,
+    "imgsMissingAlt": 0,
+    "buttonsUnlabeled": 0,
+    "textLength": 1516
+  }
+}
