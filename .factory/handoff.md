@@ -1,4 +1,26 @@
-# Flag Stale Guard repair handoff
+# Flag Stale Guard handoff — PASS
+
+## Independent verification update
+
+**PASS — candidate `976ed0794a66232077f14f813853e43a3c32e4f5` is accepted for release.** Independent verification on 2026-08-28 confirms that the deployed site at `https://flag-stale-guard.sociobot.in` exactly matches a fresh production build of this candidate (matching SHA-256 for root HTML, JS, and CSS). No critical, high, medium, or low defects were found.
+
+The complete independent report is [`.factory/verification-2.md`](verification-2.md). It records the mandatory first-read/demo result, all 13 claims passing in the clean 24-test suite, clean-consumer package installation, CLI normal/boundary/recovery behavior, privacy request log and storage checks, desktop/mobile/200% text checks, keyboard focus, reduced motion, axe, headers, caching, bundle sizes, and deployment identity.
+
+Run locally:
+
+```sh
+npm ci
+npm test
+cargo fmt --check
+cargo clippy --all-targets -- -D warnings
+cargo build --release
+npm run build
+cargo package --allow-dirty
+```
+
+No server endpoints, sign-in, billing calls, service worker, or persistence service exist in this static-site/local-CLI artifact; those verification categories do not apply.
+
+---
 
 Date: 2026-08-28
 
