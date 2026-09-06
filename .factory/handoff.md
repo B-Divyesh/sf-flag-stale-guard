@@ -1,41 +1,45 @@
-# Flag Stale Guard repair 3 handoff
+# Find stale flags and block unsafe removal — verification 3 handoff
 
 Date: 2026-09-06
 
-Implementation commit: `b8180ca41072a6eb4f0d67202209d92bcb697940`
-Documentation record: committed separately after the implementation; see the final handoff SHA in repository history.
+Work order: `flag-stale-guard-verify-3`
 
-## What changed
+Implementation candidate: `b8180ca41072a6eb4f0d67202209d92bcb697940`
 
-- Fixed review finding F-5-1. The in-memory sample review marker now resets whenever site navigation leaves demo mode, including browser history navigation.
-- Extended the `demo-sandbox` claim with an outcome-based browser regression: mark a sample source reference, leave for install steps, return through navigation, and confirm the original sample has no marker.
-- Updated demo and README documentation to say that Reset demo or leaving demo discards the sample review state. The copy audit records the added README sentences.
-- Preserved the isolated demo contract: the state is still memory-only and does not read or write browser storage or repository data.
+Documentation baseline reviewed: `73b3134fe3fc589210974c7720630f63c0e85b31`
 
-## Verification
+## Result
 
-From a new clone at the implementation commit (`/tmp/fsg-repair3-clean.4sskCJ/repo`), `npm ci` succeeded. All 15 exact commands declared in `.factory/claims.json` passed individually, followed by a passing full `npm test` run. The full suite passed 6 Rust unit tests, 5 Rust CLI integration tests, 8 build-contract tests, and 29 Playwright tests.
+**PASS — zero findings of every severity and zero untested claims.**
 
-The implementation checkout also passed `npm test`, `npm run build`, `cargo fmt --check`, `cargo clippy --all-targets -- -D warnings`, `cargo build --release`, `cargo package --allow-dirty`, `npm audit --omit=dev`, and `git diff --check`.
+The complete independent report is in `.factory/verification-3.md`. No product code changed during verification.
 
-`npm run build` produced `dist/site/`. The clean checkout claim suite exercises the installed CLI from an isolated checkout, including its demo, normal scan, expired metadata gate, literal references, blocked removal, clear-removal recovery, JSON output, invalid metadata, missing paths, the GitHub Action command, and no-network guard.
+## What was verified
 
-## Deployment and live checks
+- Fresh live phone and desktop first screens state the job, audience, first action, outcome, and three facts before scrolling.
+- The one-click sample shows three flags, expired `legacy-cart`, and two source references under a persistent demo label.
+- Reset restores and announces the original sample. Leaving and re-entering demo mode also clears changed sample state without changing seeded non-demo values.
+- All live routes, links, titles, metadata, landmarks, keyboard paths, focus behavior, 200% text resize, reduced motion, offline loaded-demo behavior, privacy isolation, legal pages, and the designed HTTP 404 passed.
+- Axe found zero violations on root, demo, privacy, terms, and 404. Both root and direct demo passed `verify-url.sh`.
+- Lighthouse mobile scored 100 Performance, 100 Accessibility, 100 Best Practices, and 100 SEO. FCP was 0.9 s, LCP 1.3 s, TBT 70 ms, CLS 0, and transfer 71 KiB.
+- All 15 exact commands in `.factory/claims.json` passed separately from a clean remote clone.
+- The full suite passed 6 Rust unit, 5 Rust integration, 8 build-contract, and 29 Playwright tests.
+- Formatting, strict Clippy, release build, `cargo package`, `cargo publish --dry-run`, npm audit, and diff checks passed.
+- The packaged crate installed in an isolated consumer root. Help, version, demo, scan, blocked removal, missing config, and unknown-key paths returned their documented results.
+- Eleven live deployment files matched the clean local build byte-for-byte. Production serves `assets/site-B9Z7Rv7V.js`; its SHA-256 is `532ae27a77890ca2b413de72a91f2db353a17790731e9d4872ae242027edff61`.
+- Every earlier verification and review finding, including minor findings and F-5-1, is fixed with current evidence.
 
-- Deployed `dist/site/` to the existing production Static Web App `sf-flag-stale-guard` using its product-scoped production configuration. The temporary untracked credential file created by the deployment CLI was deleted without being opened or committed.
-- Production now serves `assets/site-B9Z7Rv7V.js`. Its SHA-256 matches the local build: `532ae27a77890ca2b413de72a91f2db353a17790731e9d4872ae242027edff61`.
-- Fresh 390×844 phone and 1440×900 desktop contexts both showed the job (**Find flags ready for removal**), audience, and **Try it with sample data** action without scrolling or horizontal overflow.
-- The live one-click sample showed three flags, expired `legacy-cart`, and two source references. Reset restored the original sample. Changing it, leaving for install steps, and returning showed no retained review marker. Seeded non-demo local and session values stayed unchanged.
-- `/opt/fleet/lib/verify-url.sh` passed live `/` and `/?demo=1`: HTTPS 200, title, language, one H1, main landmark, image alt treatment, labelled controls, and no console errors.
-- Live Playwright axe checks found no serious or critical violations on `/`, `/demo`, `/privacy`, `/terms`, or the designed missing route. All live routes loaded correctly; `/missing-page` correctly returned HTTP 404.
-- Lighthouse mobile: Performance 100, Accessibility 100, Best Practices 100, SEO 100. FCP 0.8 s, LCP 1.2 s, TBT 80 ms, CLS 0, transfer 71 KiB.
+## Evidence
 
-## Earlier findings and remaining work
+- Repository report: `.factory/verification-3.md`
+- Required report copy: `/work/.evidence/qa-report.md`
+- Structured result: `/work/.evidence/qa-result.json`
+- Live browser, screenshot, `verify-url.sh`, and Lighthouse evidence: `/work/.evidence/sf-flag-stale-guard-verification-3-*`
 
-Every earlier verification and review finding was inspected before the repair. The prior fixes remain in place: fail-closed configured paths, ISO metadata validation, complete claim coverage, checkout install, real 404s and route metadata, 200% reflow, plain copy, demo reset feedback, history restoration, and the self-hosted CLI recording.
+## Run and package
 
-No product defects remain from this repair. This is a free local CLI with a static documentation/demo site, no backend, accounts, billing, service worker, analytics, or stored user data. Backend-only checks and billing registration are not applicable.
+Run `npm ci`, `npm test`, `npm run build`, and `cargo build --release`. The website build is `dist/site/`. Create the Rust crate with `cargo package`; publishing remains the factory’s responsibility.
 
-## Run and deploy
+## Remaining work
 
-Run `npm ci`, `npm test`, `npm run build`, and `cargo build --release`. The static deployment root is `dist/site/`. The ready-to-publish Rust package can be created with `cargo package`; registry publishing remains the factory’s responsibility.
+No product defect or untested claim remains. This product has no backend, tenant state, sign-in, billing, database, service worker, or remote source processing, so those checks are not applicable.
