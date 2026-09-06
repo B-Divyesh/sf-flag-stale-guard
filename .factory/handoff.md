@@ -1,27 +1,36 @@
-# Flag Stale Guard review 4 handoff
+# Flag Stale Guard review 5 handoff
 
-Date: 2026-08-28
-Work order: `flag-stale-guard-review-4`
-Review commit: this handoff’s commit (`docs: add adversarial review four`)
+Date: 2026-09-06
+
+Work order: `flag-stale-guard-review-5`
+
+Verdict: **FAIL — 1 minor finding; 0 untested claims.**
 
 ## Done
 
-- Performed the requested read-only adversarial review of the deployed product and current repository.
-- Added `.factory/review-4.md` with a **PASS** verdict and zero findings. It contains the cold-read result, complete landing/README copy audit, demo/privacy evidence, all 15 claim results, previous-finding verification, live route/link/accessibility checks, and missed-leverage assessment.
-- Did not modify product code, assets, configuration, or deployment settings.
+- Performed the requested read-only seven-day review of implementation candidate `e369bfeb6caa43bfae3ace1404f8b6f71986bd52` and documentation baseline `72dc90120d667dd4c3797793ff9c471d9f9b7ece`.
+- Added `.factory/review-5.md` with live phone and desktop evidence, all claim results, installed-CLI checks, accessibility and performance results, and proof for every earlier finding.
+- Found one minor defect: changed in-memory demo state survives leaving the demo and re-entering it through client navigation.
+- Did not modify product code, tests, assets, configuration, or deployment settings.
 
-## Verify
+## Verification
+
+From a clean checkout:
 
 ```sh
 npm ci
 npm test
-npm run build:site
+npm run build
+cargo build --release
+cargo package
 ```
 
-- Fresh clone: `/tmp/fsg-review4-clean.NyjBsr` at `b4721c0`.
-- Every exact command listed in `.factory/claims.json` was run separately and passed. The subsequent full `npm test` run passed its Rust unit/integration, build-contract, and 29 Playwright tests.
-- Live Chromium checks passed on 390 px and desktop; the demo preserved seeded real-storage sentinels and sent same-origin requests only. Live routes and all discovered links were checked, including an actual HTTP 404.
+All commands passed. Every exact command in `.factory/claims.json` also passed separately. The full suite passed 6 Rust unit tests, 5 Rust integration tests, 8 build-contract tests, and 29 Playwright tests.
+
+The installed artifact passed help, version, demo, JSON, normal scan, blocked removal, successful recovery, current-date boundary, expired-date, invalid adapter, empty config, malformed config, missing config, and unknown-key paths.
+
+Live `/`, `/demo`, `/privacy`, `/terms`, and the designed HTTP 404 passed route, link, keyboard, focus, 200% text, reduced-motion, privacy, and axe checks. Lighthouse mobile scored 100 in all four categories, with LCP 1.3 seconds and CLS 0.
 
 ## Remaining work
 
-None. Future copy or behavior changes should retain the claim-to-test contract and re-run this full review checklist.
+Reset the in-memory demo state when navigation leaves demo mode. Add a browser regression for change → leave → re-enter. Then rerun every declared claim command and the full suite.
