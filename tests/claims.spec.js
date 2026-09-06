@@ -180,6 +180,14 @@ test('@claim:demo-sandbox CLI and website demos leave the current repository and
   expect(after).toBe(before);
 
   await page.goto('/?demo=1');
+  await page.getByRole('button', { name: 'Mark first source reference reviewed' }).click();
+  await expect(page.getByText('Reviewed in this demo', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'View install steps' }).click();
+  await expect(page.getByRole('heading', { name: 'Run it in a repository' })).toBeFocused();
+  await page.getByLabel('Main navigation').getByRole('link', { name: 'Demo' }).click();
+  await expect(page.getByRole('heading', { name: 'Inspect three configured flags' })).toBeVisible();
+  await expect(page.getByText('Reviewed in this demo', { exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Mark first source reference reviewed' })).toBeVisible();
   await page.locator('#reset').evaluate(button => button.click());
   expect(await page.evaluate(() => ({ local: localStorage.length, session: sessionStorage.length })))
     .toEqual({ local: 0, session: 0 });

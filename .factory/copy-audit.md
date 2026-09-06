@@ -65,6 +65,8 @@ All landing sentences are below 22 words. No banned marketing words appear.
 | Text | Words |
 |---|---:|
 | The landing page has a self-hosted terminal recording and transcript of this command. | 13 |
+| It keeps its review state in memory. | 7 |
+| Reset demo or leaving the demo discards it. | 9 |
 
 ## Terminology
 

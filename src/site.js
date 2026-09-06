@@ -9,6 +9,7 @@ const sampleFlags = [
 const app = document.querySelector('#app');
 const routes = { '/': home, '/demo': demo, '/privacy': privacy, '/terms': terms, '/404.html': missing };
 let reviewedReference = false;
+let renderedPath;
 const metadata = {
   '/': {
     title: 'Flag Stale Guard — find flags ready for removal',
@@ -123,7 +124,47 @@ function restoreEntry(state) {
   });
 }
 
-function render(focusHeading = false, demoMessage = '') { const path = activePath(); app.innerHTML = `${routes[path]()}<p id="route-status" class="sr-only" aria-live="polite"></p>`; setMetadata(path); document.querySelectorAll('pre').forEach(region => { region.tabIndex = 0; }); const heading = document.querySelector('h1'); if (heading) { heading.tabIndex = -1; if (focusHeading) heading.focus({ preventScroll: true }); document.querySelector('#route-status').textContent = heading.textContent; } const notice = document.querySelector('#demo-notice'); if (notice && demoMessage) notice.textContent = demoMessage; document.querySelector('#reset')?.addEventListener('click', () => { reviewedReference = false; render(false, 'Demo reset to the original three flags.'); document.querySelector('#reset').focus(); }); document.querySelector('#review-reference')?.addEventListener('click', () => { reviewedReference = !reviewedReference; render(false, reviewedReference ? 'First source reference marked reviewed in this demo.' : 'First source reference is no longer marked reviewed.'); document.querySelector('#review-reference').focus(); }); document.querySelectorAll('[data-route]').forEach(link => link.addEventListener('click', e => { e.preventDefault(); const href = link.getAttribute('href'); saveCurrentEntry(); history.pushState({ scrollX: 0, scrollY: 0, focus: 'heading' }, '', href); render(true); const install = document.querySelector('#install-title'); if (location.hash === '#install' && install) { install.scrollIntoView(); install.focus({ preventScroll: true }); requestAnimationFrame(saveCurrentEntry); } else { window.scrollTo(0, 0); } })); }
+function render(focusHeading = false, demoMessage = '') {
+  const path = activePath();
+  if (renderedPath === '/demo' && path !== '/demo') reviewedReference = false;
+  renderedPath = path;
+  app.innerHTML = `${routes[path]()}<p id="route-status" class="sr-only" aria-live="polite"></p>`;
+  setMetadata(path);
+  document.querySelectorAll('pre').forEach(region => { region.tabIndex = 0; });
+  const heading = document.querySelector('h1');
+  if (heading) {
+    heading.tabIndex = -1;
+    if (focusHeading) heading.focus({ preventScroll: true });
+    document.querySelector('#route-status').textContent = heading.textContent;
+  }
+  const notice = document.querySelector('#demo-notice');
+  if (notice && demoMessage) notice.textContent = demoMessage;
+  document.querySelector('#reset')?.addEventListener('click', () => {
+    reviewedReference = false;
+    render(false, 'Demo reset to the original three flags.');
+    document.querySelector('#reset').focus();
+  });
+  document.querySelector('#review-reference')?.addEventListener('click', () => {
+    reviewedReference = !reviewedReference;
+    render(false, reviewedReference ? 'First source reference marked reviewed in this demo.' : 'First source reference is no longer marked reviewed.');
+    document.querySelector('#review-reference').focus();
+  });
+  document.querySelectorAll('[data-route]').forEach(link => link.addEventListener('click', e => {
+    e.preventDefault();
+    const href = link.getAttribute('href');
+    saveCurrentEntry();
+    history.pushState({ scrollX: 0, scrollY: 0, focus: 'heading' }, '', href);
+    render(true);
+    const install = document.querySelector('#install-title');
+    if (location.hash === '#install' && install) {
+      install.scrollIntoView();
+      install.focus({ preventScroll: true });
+      requestAnimationFrame(saveCurrentEntry);
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }));
+}
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 document.querySelector('.skip')?.addEventListener('click', event => {
